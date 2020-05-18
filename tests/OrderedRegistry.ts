@@ -37,6 +37,6 @@ describe('OrderedRegistry', () => {
 		addEntries(reg, 10);
 		reg.clear();
 		expect(reg.toArray().length).equal(0);
-		expect(reg.contains(1)).to.be.false;
+		expect(reg.has(1)).to.be.false;
 	});
 });

@@ -3,7 +3,8 @@
  * Licensing: MIT
  */
 
-import IterableCollectionBase from '@tsdotnet/collection-base';
+import {ExtendedIterable} from '@tsdotnet/collection-base';
+import ReadOnlyCollectionBase from '@tsdotnet/collection-base/dist/ReadOnlyCollectionBase';
 import areEqual from '@tsdotnet/compare/dist/areEqual';
 import ArgumentException from '@tsdotnet/exceptions/dist/ArgumentException';
 import ArgumentNullException from '@tsdotnet/exceptions/dist/ArgumentNullException';
@@ -16,33 +17,72 @@ type KeyValuePair<TKey, TValue> = {
 
 type Node<TKey, TValue> = KeyValuePair<TKey, TValue> & LinkedNode<Node<TKey, TValue>>;
 
+/**
+ * A collection for registering values by key.
+ */
 export default class OrderedRegistry<TKey, TValue>
-	extends IterableCollectionBase<KeyValuePair<TKey, TValue>>
+	extends ReadOnlyCollectionBase<KeyValuePair<TKey, TValue>>
 {
 	private readonly _entries: Map<TKey, Readonly<Node<TKey, TValue>>>;
-	private readonly _list: LinkedNodeList<Node<TKey, TValue>>;
-	private readonly _keys: Iterable<TKey>;
+	private readonly _listInternal: LinkedNodeList<Node<TKey, TValue>>;
 
 	constructor ()
 	{
 		super();
 		this._entries = new Map<TKey, Node<TKey, TValue>>();
-		const list = new LinkedNodeList<Node<TKey, TValue>>();
-		this._list = list;
-		this._keys = {
-			* [Symbol.iterator] (): Iterator<TKey>
-			{
-				for(const n of list)
-				{
-					yield n.key;
-				}
-			}
-		};
+		this._listInternal = new LinkedNodeList<Node<TKey, TValue>>();
 	}
 
-	protected* _getIterator (): Iterator<KeyValuePair<TKey, TValue>>
+	private _keys?: Readonly<ExtendedIterable<TKey>>;
+
+	/**
+	 * Returns an in-order iterable of all keys.
+	 */
+	get keys (): Readonly<ExtendedIterable<TKey>>
 	{
-		for(const n of this._list) yield copy(n);
+		const _ = this;
+		return _._keys || (_._keys = Object.freeze(ExtendedIterable.create({
+			* [Symbol.iterator] (): Iterator<TKey>
+			{
+				for(const n of _._listInternal) yield n.key;
+			}
+		})));
+	}
+
+	private _reversed?: Readonly<ExtendedIterable<KeyValuePair<TKey, TValue>>>;
+
+	/**
+	 * Iterable for iterating this collection in reverse order.
+	 * @return {Iterable}
+	 */
+	get reversed (): ExtendedIterable<KeyValuePair<TKey, TValue>>
+	{
+		const _ = this;
+		return (_._reversed || (_._reversed = Object.freeze(ExtendedIterable.create({
+			* [Symbol.iterator] (): Iterator<KeyValuePair<TKey, TValue>>
+			{
+				for(const n of _._listInternal.reversed) yield copy(n);
+			}
+		})))) as ExtendedIterable<KeyValuePair<TKey, TValue>>;
+	}
+
+	/**
+	 * The version number used to track changes.
+	 * @returns {number}
+	 */
+	get version (): number
+	{
+		return this._listInternal.version;
+	}
+
+	/**
+	 * Throws if the provided version does not match the current one.
+	 * @param {number} version
+	 * @returns {boolean}
+	 */
+	assertVersion (version: number): true | never
+	{
+		return this._listInternal.assertVersion(version);
 	}
 
 	/**
@@ -52,7 +92,7 @@ export default class OrderedRegistry<TKey, TValue>
 	 */
 	incrementVersion (): number
 	{
-		return this._list.incrementVersion();
+		return this._listInternal.incrementVersion();
 	}
 
 	/**
@@ -62,7 +102,48 @@ export default class OrderedRegistry<TKey, TValue>
 	clear (): number
 	{
 		this._entries.clear();
-		return this._list.clear();
+		return this._listInternal.clear();
+	}
+
+	/**
+	 * Clears the collection.
+	 * Provided for compatibility with disposal routines.
+	 */
+	dispose (): void
+	{
+		this.clear();
+	}
+
+	/**
+	 * Gets the number of nodes in the list.
+	 * @return {number}
+	 */
+	getCount (): number
+	{
+		return this._listInternal.unsafeCount;
+	}
+
+	/**
+	 * Returns true if the key exists and the value matches exactly.
+	 * @param entry
+	 * @returns {boolean}
+	 */
+	contains (entry: KeyValuePair<TKey, TValue>): boolean
+	{
+		if(!entry) return false;
+		const e = this._entries, key = entry.key;
+		if(!e.has(key)) return false;
+		return e.get(key)?.value===entry.value;
+	}
+
+	/**
+	 * Returns true
+	 * @param {TKey} key
+	 * @return {boolean}
+	 */
+	has (key: TKey): boolean
+	{
+		return this._entries.has(key);
 	}
 
 	/**
@@ -81,8 +162,8 @@ export default class OrderedRegistry<TKey, TValue>
 			key: key,
 			value: value
 		};
-		this._list.addNode(node);
 		this._entries.set(key, node);
+		this._listInternal.addNode(node);
 		return this;
 	}
 
@@ -97,58 +178,30 @@ export default class OrderedRegistry<TKey, TValue>
 		const node = e.get(key);
 		e.delete(key);
 		if(!node) return undefined;
-		this._list.removeNode(node);
+		this._listInternal.removeNode(node);
 		return node.value;
 	}
 
 	/**
 	 * Removes the first node and returns its value.
 	 */
-	takeFirst (): TValue | undefined
+	takeFirst (): KeyValuePair<TKey, TValue> | undefined
 	{
-		return this.remove(this._list.first?.key!);
+		const key = this._listInternal.first?.key;
+		if(key===undefined) return undefined;
+		const value = this.remove(key)!;
+		return {key, value};
 	}
 
 	/**
 	 * Removes the last node and returns its value.
 	 */
-	takeLast (): TValue | undefined
+	takeLast (): KeyValuePair<TKey, TValue> | undefined
 	{
-		return this.remove(this._list.last?.key!);
-	}
-
-	/**
-	 * Iterable for iterating this collection in reverse order.
-	 * @return {Iterable}
-	 */
-	get reversed (): Iterable<KeyValuePair<TKey, TValue>>
-	{
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const _ = this;
-		return {
-			* [Symbol.iterator] (): Iterator<KeyValuePair<TKey, TValue>>
-			{
-				for(const n of _._list.reversed) yield copy(n);
-			}
-		};
-	}
-
-	/**
-	 * Returns true if the key is registered.
-	 * @param {TKey} key
-	 * @return {boolean}
-	 */
-	contains (key: TKey): boolean
-	{
-		return this._entries.has(key);
-	}
-
-	/**
-	 * Returns an in-order iterable of all keys.
-	 */
-	get keys (): Iterable<TKey>
-	{
-		return this._keys;
+		const key = this._listInternal.last?.key;
+		if(key===undefined) return undefined;
+		const value = this.remove(key)!;
+		return {key, value};
 	}
 
 	/**
@@ -157,7 +210,7 @@ export default class OrderedRegistry<TKey, TValue>
 	 */
 	getFirstKeyOf (value: TValue): TKey | undefined
 	{
-		for(const n of this._list)
+		for(const n of this._listInternal)
 		{
 			if(areEqual(value, n.value)) return n.key;
 		}
@@ -178,6 +231,56 @@ export default class OrderedRegistry<TKey, TValue>
 		this.add(key, value);
 		return true;
 	}
+
+	protected* _getIterator (): Iterator<KeyValuePair<TKey, TValue>>
+	{
+		for(const n of this._listInternal) yield copy(n);
+	}
+}
+
+export class OrderedAutoRegistry<T>
+	extends OrderedRegistry<number, T>
+{
+	private _lastId: number = 0 | 0;
+
+	/**
+	 * Not supported.  Use `.addValue(value: T): number` instead.
+	 * @throws
+	 * @param {TKey} id
+	 * @param {TValue} value
+	 * @return {this}
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	add (id: number, value: T): never
+	{
+		throw new Error('Directly adding an ID to an OrderedAutoRegistry is not supported.');
+	}
+
+	/**
+	 * Adds an entry and returns the ID generated for it.
+	 * @param {T} value
+	 * @return {number}
+	 */
+	addValue (value: T): number
+	{
+		const newId = this._lastId++;
+		super.add(newId, value);
+		return newId;
+	}
+
+	/**
+	 * Generates an Id before passing it to the handler.
+	 * The value returned from the handler is used to add to the registry and returned as the result.
+	 * @param factory
+	 */
+	addEntry (factory: (id: number) => T): T
+	{
+		const newId = this._lastId++;
+		const value = factory(newId);
+		super.add(newId, value);
+		return value;
+	}
+
 }
 
 function copy<TKey, TValue> (kvp: KeyValuePair<TKey, TValue>): KeyValuePair<TKey, TValue>
