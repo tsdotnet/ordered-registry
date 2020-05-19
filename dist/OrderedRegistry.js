@@ -114,6 +114,15 @@ class OrderedRegistry extends ReadOnlyCollectionBase_1.default {
         return this._entries.has(key);
     }
     /**
+     * Returns true
+     * @param {TKey} key
+     * @return {boolean}
+     */
+    get(key) {
+        var _a;
+        return (_a = this._entries.get(key)) === null || _a === void 0 ? void 0 : _a.value;
+    }
+    /**
      * Add an entry to the end of the registry.
      * @throws If key is null.
      * @throws If key already exists.

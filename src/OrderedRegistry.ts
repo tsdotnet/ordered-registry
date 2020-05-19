@@ -147,6 +147,16 @@ export default class OrderedRegistry<TKey, TValue>
 	}
 
 	/**
+	 * Returns true
+	 * @param {TKey} key
+	 * @return {boolean}
+	 */
+	get (key: TKey): TValue | undefined
+	{
+		return this._entries.get(key)?.value;
+	}
+
+	/**
 	 * Add an entry to the end of the registry.
 	 * @throws If key is null.
 	 * @throws If key already exists.

@@ -71,6 +71,12 @@ export default class OrderedRegistry<TKey, TValue> extends ReadOnlyCollectionBas
      */
     has(key: TKey): boolean;
     /**
+     * Returns true
+     * @param {TKey} key
+     * @return {boolean}
+     */
+    get(key: TKey): TValue | undefined;
+    /**
      * Add an entry to the end of the registry.
      * @throws If key is null.
      * @throws If key already exists.
