@@ -114,9 +114,9 @@ class OrderedRegistry extends ReadOnlyCollectionBase_1.default {
         return this._entries.has(key);
     }
     /**
-     * Returns true
+     * Returns the value if it exists.  Otherwise undefined.
      * @param {TKey} key
-     * @return {boolean}
+     * @return {TValue | undefined}
      */
     get(key) {
         var _a;

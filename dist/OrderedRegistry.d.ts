@@ -71,9 +71,9 @@ export default class OrderedRegistry<TKey, TValue> extends ReadOnlyCollectionBas
      */
     has(key: TKey): boolean;
     /**
-     * Returns true
+     * Returns the value if it exists.  Otherwise undefined.
      * @param {TKey} key
-     * @return {boolean}
+     * @return {TValue | undefined}
      */
     get(key: TKey): TValue | undefined;
     /**

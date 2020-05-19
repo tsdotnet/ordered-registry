@@ -146,7 +146,6 @@ export default class OrderedRegistry<TKey, TValue>
 		return this._entries.has(key);
 	}
 
-
 	/**
 	 * Returns the value if it exists.  Otherwise undefined.
 	 * @param {TKey} key
