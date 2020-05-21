@@ -5,7 +5,7 @@
 import { ExtendedIterable } from '@tsdotnet/collection-base';
 import ReadOnlyCollectionBase from '@tsdotnet/collection-base/dist/ReadOnlyCollectionBase';
 declare type KeyValuePair<TKey, TValue> = {
-    key: TKey;
+    readonly key: TKey;
     value: TValue;
 };
 /**
@@ -76,6 +76,13 @@ export default class OrderedRegistry<TKey, TValue> extends ReadOnlyCollectionBas
      * @return {TValue | undefined}
      */
     get(key: TKey): TValue | undefined;
+    /**
+     * Updates or adds a value.
+     * @param {TKey} key
+     * @param {TValue} value
+     * @return {boolean} True if the value was added or changed.  False if no change.
+     */
+    set(key: TKey, value: TValue): boolean;
     /**
      * Add an entry to the end of the registry.
      * @throws If key is null.

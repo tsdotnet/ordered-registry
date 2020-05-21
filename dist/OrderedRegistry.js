@@ -123,6 +123,25 @@ class OrderedRegistry extends ReadOnlyCollectionBase_1.default {
         return (_a = this._entries.get(key)) === null || _a === void 0 ? void 0 : _a.value;
     }
     /**
+     * Updates or adds a value.
+     * @param {TKey} key
+     * @param {TValue} value
+     * @return {boolean} True if the value was added or changed.  False if no change.
+     */
+    set(key, value) {
+        const node = this._entries.get(key);
+        if (node) {
+            const old = node.value;
+            if (areEqual_1.default(old, value))
+                return false;
+            node.value = value;
+        }
+        else {
+            this.add(key, value);
+        }
+        return true;
+    }
+    /**
      * Add an entry to the end of the registry.
      * @throws If key is null.
      * @throws If key already exists.

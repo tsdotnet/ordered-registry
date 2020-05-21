@@ -9,13 +9,20 @@ import areEqual from '@tsdotnet/compare/dist/areEqual';
 import ArgumentException from '@tsdotnet/exceptions/dist/ArgumentException';
 import ArgumentNullException from '@tsdotnet/exceptions/dist/ArgumentNullException';
 import {LinkedNode, LinkedNodeList} from '@tsdotnet/linked-node-list';
+import {ProtectedLinkedNode} from '@tsdotnet/linked-node-list/dist/LinkedListNode';
 
 type KeyValuePair<TKey, TValue> = {
-	key: TKey;
+	readonly key: TKey;
 	value: TValue;
 }
 
-type Node<TKey, TValue> = KeyValuePair<TKey, TValue> & LinkedNode<Node<TKey, TValue>>;
+type Node<TKey, TValue> =
+	KeyValuePair<TKey, TValue>
+	& LinkedNode<Node<TKey, TValue>>;
+
+type ProtectedNode<TKey, TValue> =
+	KeyValuePair<TKey, TValue>
+	& ProtectedLinkedNode<Node<TKey, TValue>>;
 
 /**
  * A collection for registering values by key.
@@ -23,7 +30,7 @@ type Node<TKey, TValue> = KeyValuePair<TKey, TValue> & LinkedNode<Node<TKey, TVa
 export default class OrderedRegistry<TKey, TValue>
 	extends ReadOnlyCollectionBase<KeyValuePair<TKey, TValue>>
 {
-	private readonly _entries: Map<TKey, Readonly<Node<TKey, TValue>>>;
+	private readonly _entries: Map<TKey, ProtectedNode<TKey, TValue>>;
 	private readonly _listInternal: LinkedNodeList<Node<TKey, TValue>>;
 
 	constructor ()
@@ -154,6 +161,28 @@ export default class OrderedRegistry<TKey, TValue>
 	get (key: TKey): TValue | undefined
 	{
 		return this._entries.get(key)?.value;
+	}
+
+	/**
+	 * Updates or adds a value.
+	 * @param {TKey} key
+	 * @param {TValue} value
+	 * @return {boolean} True if the value was added or changed.  False if no change.
+	 */
+	set (key: TKey, value: TValue): boolean
+	{
+		const node = this._entries.get(key);
+		if(node)
+		{
+			const old = node.value;
+			if(areEqual(old, value)) return false;
+			node.value = value;
+		}
+		else
+		{
+			this.add(key, value);
+		}
+		return true;
 	}
 
 	/**
