@@ -10,11 +10,13 @@ declare type KeyValuePair<TKey, TValue> = {
 };
 /**
  * A collection for registering values by key.
+ * This base class is intended to facilitate specialized control.
+ * Sub-classes control how items are added.
  */
-export default class OrderedRegistry<TKey, TValue> extends ReadOnlyCollectionBase<KeyValuePair<TKey, TValue>> {
+export declare abstract class OrderedRegistryBase<TKey, TValue> extends ReadOnlyCollectionBase<KeyValuePair<TKey, TValue>> {
     private readonly _entries;
     private readonly _listInternal;
-    constructor();
+    protected constructor();
     private _keys?;
     /**
      * Returns an in-order iterable of all keys.
@@ -77,13 +79,6 @@ export default class OrderedRegistry<TKey, TValue> extends ReadOnlyCollectionBas
      */
     get(key: TKey): TValue | undefined;
     /**
-     * Updates or adds a value.
-     * @param {TKey} key
-     * @param {TValue} value
-     * @return {boolean} True if the value was added or changed.  False if no change.
-     */
-    set(key: TKey, value: TValue): boolean;
-    /**
      * Add an entry to the end of the registry.
      * @throws If key is null.
      * @throws If key already exists.
@@ -91,7 +86,14 @@ export default class OrderedRegistry<TKey, TValue> extends ReadOnlyCollectionBas
      * @param {TValue} value
      * @return {this}
      */
-    add(key: TKey, value: TValue): this;
+    protected _addInternal(key: TKey, value: TValue): this;
+    /**
+     * Updates or adds a value.
+     * @param {TKey} key
+     * @param {TValue} value
+     * @return {boolean} True if the value was added or changed.  False if no change.
+     */
+    protected _setInternal(key: TKey, value: TValue): boolean;
     /**
      * Removes an entry and returns its value if found.
      * @param key
@@ -110,6 +112,26 @@ export default class OrderedRegistry<TKey, TValue> extends ReadOnlyCollectionBas
      * @param value
      */
     getFirstKeyOf(value: TValue): TKey | undefined;
+    protected _getIterator(): Iterator<KeyValuePair<TKey, TValue>>;
+}
+export default class OrderedRegistry<TKey, TValue> extends OrderedRegistryBase<TKey, TValue> {
+    constructor();
+    /**
+     * Add an entry to the end of the registry.
+     * @throws If key is null.
+     * @throws If key already exists.
+     * @param {TKey} key
+     * @param {TValue} value
+     * @return {this}
+     */
+    add(key: TKey, value: TValue): this;
+    /**
+     * Updates or adds a value.
+     * @param {TKey} key
+     * @param {TValue} value
+     * @return {boolean} True if the value was added or changed.  False if no change.
+     */
+    set(key: TKey, value: TValue): boolean;
     /**
      * Adds an entry to the registry if it doesn't exist.
      * Returns true if the key did not exist and the entry was added.
@@ -119,24 +141,16 @@ export default class OrderedRegistry<TKey, TValue> extends ReadOnlyCollectionBas
      * @return {boolean}
      */
     register(key: TKey, value: TValue): boolean;
-    protected _getIterator(): Iterator<KeyValuePair<TKey, TValue>>;
 }
-export declare class OrderedAutoRegistry<T> extends OrderedRegistry<number, T> {
+export declare class OrderedAutoRegistry<T> extends OrderedRegistryBase<number, T> {
     private _lastId;
-    /**
-     * Not supported.  Use `.addValue(value: T): number` instead.
-     * @throws
-     * @param {TKey} id
-     * @param {TValue} value
-     * @return {this}
-     */
-    add(id: number, value: T): never;
+    constructor();
     /**
      * Adds an entry and returns the ID generated for it.
      * @param {T} value
      * @return {number}
      */
-    addValue(value: T): number;
+    add(value: T): number;
     /**
      * Generates an Id before passing it to the handler.
      * The value returned from the handler is used to add to the registry and returned as the result.

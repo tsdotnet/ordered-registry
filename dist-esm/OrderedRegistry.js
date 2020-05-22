@@ -10,8 +10,10 @@ import ArgumentNullException from '@tsdotnet/exceptions/dist/ArgumentNullExcepti
 import { LinkedNodeList } from '@tsdotnet/linked-node-list';
 /**
  * A collection for registering values by key.
+ * This base class is intended to facilitate specialized control.
+ * Sub-classes control how items are added.
  */
-export default class OrderedRegistry extends ReadOnlyCollectionBase {
+export class OrderedRegistryBase extends ReadOnlyCollectionBase {
     constructor() {
         super();
         this._entries = new Map();
@@ -119,25 +121,6 @@ export default class OrderedRegistry extends ReadOnlyCollectionBase {
         return (_a = this._entries.get(key)) === null || _a === void 0 ? void 0 : _a.value;
     }
     /**
-     * Updates or adds a value.
-     * @param {TKey} key
-     * @param {TValue} value
-     * @return {boolean} True if the value was added or changed.  False if no change.
-     */
-    set(key, value) {
-        const node = this._entries.get(key);
-        if (node) {
-            const old = node.value;
-            if (areEqual(old, value))
-                return false;
-            node.value = value;
-        }
-        else {
-            this.add(key, value);
-        }
-        return true;
-    }
-    /**
      * Add an entry to the end of the registry.
      * @throws If key is null.
      * @throws If key already exists.
@@ -145,7 +128,7 @@ export default class OrderedRegistry extends ReadOnlyCollectionBase {
      * @param {TValue} value
      * @return {this}
      */
-    add(key, value) {
+    _addInternal(key, value) {
         if (key == null)
             throw new ArgumentNullException('key');
         if (this._entries.has(key))
@@ -157,6 +140,25 @@ export default class OrderedRegistry extends ReadOnlyCollectionBase {
         this._entries.set(key, node);
         this._listInternal.addNode(node);
         return this;
+    }
+    /**
+     * Updates or adds a value.
+     * @param {TKey} key
+     * @param {TValue} value
+     * @return {boolean} True if the value was added or changed.  False if no change.
+     */
+    _setInternal(key, value) {
+        const node = this._entries.get(key);
+        if (node) {
+            const old = node.value;
+            if (areEqual(old, value))
+                return false;
+            node.value = value;
+        }
+        else {
+            this._addInternal(key, value);
+        }
+        return true;
     }
     /**
      * Removes an entry and returns its value if found.
@@ -206,6 +208,35 @@ export default class OrderedRegistry extends ReadOnlyCollectionBase {
         }
         return undefined;
     }
+    *_getIterator() {
+        for (const n of this._listInternal)
+            yield copy(n);
+    }
+}
+export default class OrderedRegistry extends OrderedRegistryBase {
+    constructor() {
+        super();
+    }
+    /**
+     * Add an entry to the end of the registry.
+     * @throws If key is null.
+     * @throws If key already exists.
+     * @param {TKey} key
+     * @param {TValue} value
+     * @return {this}
+     */
+    add(key, value) {
+        return this._addInternal(key, value);
+    }
+    /**
+     * Updates or adds a value.
+     * @param {TKey} key
+     * @param {TValue} value
+     * @return {boolean} True if the value was added or changed.  False if no change.
+     */
+    set(key, value) {
+        return super._setInternal(key, value);
+    }
     /**
      * Adds an entry to the registry if it doesn't exist.
      * Returns true if the key did not exist and the entry was added.
@@ -215,40 +246,25 @@ export default class OrderedRegistry extends ReadOnlyCollectionBase {
      * @return {boolean}
      */
     register(key, value) {
-        if (this._entries.has(key))
+        if (this.has(key))
             return false;
-        this.add(key, value);
+        this._addInternal(key, value);
         return true;
     }
-    *_getIterator() {
-        for (const n of this._listInternal)
-            yield copy(n);
-    }
 }
-export class OrderedAutoRegistry extends OrderedRegistry {
+export class OrderedAutoRegistry extends OrderedRegistryBase {
     constructor() {
-        super(...arguments);
+        super();
         this._lastId = 0 | 0;
-    }
-    /**
-     * Not supported.  Use `.addValue(value: T): number` instead.
-     * @throws
-     * @param {TKey} id
-     * @param {TValue} value
-     * @return {this}
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    add(id, value) {
-        throw new Error('Directly adding an ID to an OrderedAutoRegistry is not supported.');
     }
     /**
      * Adds an entry and returns the ID generated for it.
      * @param {T} value
      * @return {number}
      */
-    addValue(value) {
-        const newId = this._lastId++;
-        super.add(newId, value);
+    add(value) {
+        const newId = ++this._lastId;
+        this._addInternal(newId, value);
         return newId;
     }
     /**
@@ -257,9 +273,9 @@ export class OrderedAutoRegistry extends OrderedRegistry {
      * @param factory
      */
     addEntry(factory) {
-        const newId = this._lastId++;
+        const newId = ++this._lastId;
         const value = factory(newId);
-        super.add(newId, value);
+        this._addInternal(newId, value);
         return value;
     }
 }
