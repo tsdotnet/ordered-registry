@@ -24,12 +24,12 @@ export class OrderedRegistryBase extends ReadOnlyCollectionBase {
      */
     get keys() {
         const _ = this;
-        return _._keys || (_._keys = Object.freeze(ExtendedIterable.create({
+        return (_._keys || (_._keys = Object.freeze(ExtendedIterable.create({
             *[Symbol.iterator]() {
                 for (const n of _._listInternal)
                     yield n.key;
             }
-        })));
+        }))));
     }
     /**
      * Iterable for iterating this collection in reverse order.
@@ -266,6 +266,17 @@ export class OrderedAutoRegistry extends OrderedRegistryBase {
         const newId = ++this._lastId;
         this._addInternal(newId, value);
         return newId;
+    }
+    /**
+     * Adds an entry to the registry if it doesn't exist.
+     * @param {T} value
+     * @return {boolean} The id of the entry.
+     */
+    register(value) {
+        for (const id of this.keys)
+            if (this.get(id) === value)
+                return id;
+        return this.add(value);
     }
     /**
      * Generates an Id before passing it to the handler.

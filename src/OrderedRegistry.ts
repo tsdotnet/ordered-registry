@@ -47,15 +47,15 @@ export abstract class OrderedRegistryBase<TKey, TValue>
 	/**
 	 * Returns an in-order iterable of all keys.
 	 */
-	get keys (): Readonly<ExtendedIterable<TKey>>
+	get keys (): ExtendedIterable<TKey>
 	{
 		const _ = this;
-		return _._keys || (_._keys = Object.freeze(ExtendedIterable.create({
+		return (_._keys || (_._keys = Object.freeze(ExtendedIterable.create({
 			* [Symbol.iterator] (): Iterator<TKey>
 			{
 				for(const n of _._listInternal) yield n.key;
 			}
-		})));
+		})))) as ExtendedIterable<TKey>;
 	}
 
 	private _reversed?: Readonly<ExtendedIterable<KeyValuePair<TKey, TValue>>>;
@@ -334,6 +334,17 @@ export class OrderedAutoRegistry<T>
 		const newId = ++this._lastId;
 		this._addInternal(newId, value);
 		return newId;
+	}
+
+	/**
+	 * Adds an entry to the registry if it doesn't exist.
+	 * @param {T} value
+	 * @return {boolean} The id of the entry.
+	 */
+	register (value: T): number
+	{
+		for(const id of this.keys) if(this.get(id)===value) return id;
+		return this.add(value);
 	}
 
 	/**

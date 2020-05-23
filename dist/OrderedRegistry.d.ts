@@ -21,7 +21,7 @@ export declare abstract class OrderedRegistryBase<TKey, TValue> extends ReadOnly
     /**
      * Returns an in-order iterable of all keys.
      */
-    get keys(): Readonly<ExtendedIterable<TKey>>;
+    get keys(): ExtendedIterable<TKey>;
     private _reversed?;
     /**
      * Iterable for iterating this collection in reverse order.
@@ -151,6 +151,12 @@ export declare class OrderedAutoRegistry<T> extends OrderedRegistryBase<number, 
      * @return {number}
      */
     add(value: T): number;
+    /**
+     * Adds an entry to the registry if it doesn't exist.
+     * @param {T} value
+     * @return {boolean} The id of the entry.
+     */
+    register(value: T): number;
     /**
      * Generates an Id before passing it to the handler.
      * The value returned from the handler is used to add to the registry and returned as the result.
