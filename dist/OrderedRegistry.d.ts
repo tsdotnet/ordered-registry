@@ -18,10 +18,15 @@ export declare abstract class OrderedRegistryBase<TKey, TValue> extends ReadOnly
     private readonly _listInternal;
     protected constructor();
     private _keys?;
+    private _values?;
     /**
      * Returns an in-order iterable of all keys.
      */
     get keys(): ExtendedIterable<TKey>;
+    /**
+     * Returns an in-order iterable of all values.
+     */
+    get values(): ExtendedIterable<TValue>;
     private _reversed?;
     /**
      * Iterable for iterating this collection in reverse order.

@@ -43,6 +43,7 @@ export abstract class OrderedRegistryBase<TKey, TValue>
 	}
 
 	private _keys?: Readonly<ExtendedIterable<TKey>>;
+	private _values?: Readonly<ExtendedIterable<TValue>>;
 
 	/**
 	 * Returns an in-order iterable of all keys.
@@ -56,6 +57,20 @@ export abstract class OrderedRegistryBase<TKey, TValue>
 				for(const n of _._listInternal) yield n.key;
 			}
 		})))) as ExtendedIterable<TKey>;
+	}
+
+	/**
+	 * Returns an in-order iterable of all values.
+	 */
+	get values (): ExtendedIterable<TValue>
+	{
+		const _ = this;
+		return (_._values || (_._values = Object.freeze(ExtendedIterable.create({
+			* [Symbol.iterator] (): Iterator<TValue>
+			{
+				for(const n of _._listInternal) yield n.value;
+			}
+		})))) as ExtendedIterable<TValue>;
 	}
 
 	private _reversed?: Readonly<ExtendedIterable<KeyValuePair<TKey, TValue>>>;

@@ -36,6 +36,18 @@ class OrderedRegistryBase extends ReadOnlyCollectionBase_1.default {
         }))));
     }
     /**
+     * Returns an in-order iterable of all values.
+     */
+    get values() {
+        const _ = this;
+        return (_._values || (_._values = Object.freeze(collection_base_1.ExtendedIterable.create({
+            *[Symbol.iterator]() {
+                for (const n of _._listInternal)
+                    yield n.value;
+            }
+        }))));
+    }
+    /**
      * Iterable for iterating this collection in reverse order.
      * @return {Iterable}
      */
