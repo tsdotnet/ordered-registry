@@ -105,7 +105,7 @@ export class OrderedRegistryBase extends ReadOnlyCollectionBase {
      * Returns true if there are no entries.
      * @return {boolean}
      */
-    isEmpty() {
+    get isEmpty() {
         return !this._listInternal.unsafeCount;
     }
     /**

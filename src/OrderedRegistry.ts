@@ -151,7 +151,7 @@ export abstract class OrderedRegistryBase<TKey, TValue>
 	 * Returns true if there are no entries.
 	 * @return {boolean}
 	 */
-	isEmpty (): boolean
+	get isEmpty (): boolean
 	{
 		return !this._listInternal.unsafeCount;
 	}

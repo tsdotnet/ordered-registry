@@ -69,7 +69,7 @@ export declare abstract class OrderedRegistryBase<TKey, TValue> extends ReadOnly
      * Returns true if there are no entries.
      * @return {boolean}
      */
-    isEmpty(): boolean;
+    get isEmpty(): boolean;
     /**
      * Returns true if the key exists and the value matches exactly.
      * @param entry
