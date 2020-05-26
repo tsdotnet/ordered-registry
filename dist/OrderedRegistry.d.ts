@@ -61,10 +61,15 @@ export declare abstract class OrderedRegistryBase<TKey, TValue> extends ReadOnly
      */
     dispose(): void;
     /**
-     * Gets the number of nodes in the list.
+     * Gets the number of entries.
      * @return {number}
      */
     getCount(): number;
+    /**
+     * Returns true if there are no entries.
+     * @return {boolean}
+     */
+    isEmpty(): boolean;
     /**
      * Returns true if the key exists and the value matches exactly.
      * @param entry

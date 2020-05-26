@@ -139,12 +139,21 @@ export abstract class OrderedRegistryBase<TKey, TValue>
 	}
 
 	/**
-	 * Gets the number of nodes in the list.
+	 * Gets the number of entries.
 	 * @return {number}
 	 */
 	getCount (): number
 	{
 		return this._listInternal.unsafeCount;
+	}
+
+	/**
+	 * Returns true if there are no entries.
+	 * @return {boolean}
+	 */
+	isEmpty (): boolean
+	{
+		return !this._listInternal.unsafeCount;
 	}
 
 	/**

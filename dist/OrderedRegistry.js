@@ -99,11 +99,18 @@ class OrderedRegistryBase extends ReadOnlyCollectionBase_1.default {
         this.clear();
     }
     /**
-     * Gets the number of nodes in the list.
+     * Gets the number of entries.
      * @return {number}
      */
     getCount() {
         return this._listInternal.unsafeCount;
+    }
+    /**
+     * Returns true if there are no entries.
+     * @return {boolean}
+     */
+    isEmpty() {
+        return !this._listInternal.unsafeCount;
     }
     /**
      * Returns true if the key exists and the value matches exactly.
