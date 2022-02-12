@@ -14,7 +14,7 @@ import {ProtectedLinkedNode} from '@tsdotnet/linked-node-list/dist/LinkedListNod
 type KeyValuePair<TKey, TValue> = {
 	readonly key: TKey;
 	value: TValue;
-}
+};
 
 type Node<TKey, TValue> =
 	KeyValuePair<TKey, TValue>

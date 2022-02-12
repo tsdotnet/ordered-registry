@@ -7,10 +7,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderedAutoRegistry = exports.OrderedRegistryBase = void 0;
 const tslib_1 = require("tslib");
 const collection_base_1 = require("@tsdotnet/collection-base");
-const ReadOnlyCollectionBase_1 = tslib_1.__importDefault(require("@tsdotnet/collection-base/dist/ReadOnlyCollectionBase"));
-const areEqual_1 = tslib_1.__importDefault(require("@tsdotnet/compare/dist/areEqual"));
-const ArgumentException_1 = tslib_1.__importDefault(require("@tsdotnet/exceptions/dist/ArgumentException"));
-const ArgumentNullException_1 = tslib_1.__importDefault(require("@tsdotnet/exceptions/dist/ArgumentNullException"));
+const ReadOnlyCollectionBase_1 = (0, tslib_1.__importDefault)(require("@tsdotnet/collection-base/dist/ReadOnlyCollectionBase"));
+const areEqual_1 = (0, tslib_1.__importDefault)(require("@tsdotnet/compare/dist/areEqual"));
+const ArgumentException_1 = (0, tslib_1.__importDefault)(require("@tsdotnet/exceptions/dist/ArgumentException"));
+const ArgumentNullException_1 = (0, tslib_1.__importDefault)(require("@tsdotnet/exceptions/dist/ArgumentNullException"));
 const linked_node_list_1 = require("@tsdotnet/linked-node-list");
 /**
  * A collection for registering values by key.
@@ -174,7 +174,7 @@ class OrderedRegistryBase extends ReadOnlyCollectionBase_1.default {
         const node = this._entries.get(key);
         if (node) {
             const old = node.value;
-            if (areEqual_1.default(old, value))
+            if ((0, areEqual_1.default)(old, value))
                 return false;
             node.value = value;
         }
@@ -226,7 +226,7 @@ class OrderedRegistryBase extends ReadOnlyCollectionBase_1.default {
      */
     getFirstKeyOf(value) {
         for (const n of this._listInternal) {
-            if (areEqual_1.default(value, n.value))
+            if ((0, areEqual_1.default)(value, n.value))
                 return n.key;
         }
         return undefined;
