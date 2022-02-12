@@ -11,7 +11,7 @@ import ArgumentNullException from '@tsdotnet/exceptions/dist/ArgumentNullExcepti
 import {LinkedNode, LinkedNodeList} from '@tsdotnet/linked-node-list';
 import {ProtectedLinkedNode} from '@tsdotnet/linked-node-list/dist/LinkedListNode';
 
-type KeyValuePair<TKey, TValue> = {
+export type KeyValuePair<TKey, TValue> = {
 	readonly key: TKey;
 	value: TValue;
 };

@@ -4,7 +4,7 @@
  */
 import { ExtendedIterable } from '@tsdotnet/collection-base';
 import ReadOnlyCollectionBase from '@tsdotnet/collection-base/dist/ReadOnlyCollectionBase';
-declare type KeyValuePair<TKey, TValue> = {
+export declare type KeyValuePair<TKey, TValue> = {
     readonly key: TKey;
     value: TValue;
 };
@@ -174,4 +174,3 @@ export declare class OrderedAutoRegistry<T> extends OrderedRegistryBase<number, 
      */
     addEntry(factory: (id: number) => T): T;
 }
-export {};
