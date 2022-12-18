@@ -7,10 +7,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderedAutoRegistry = exports.OrderedRegistryBase = void 0;
 const tslib_1 = require("tslib");
 const collection_base_1 = require("@tsdotnet/collection-base");
-const ReadOnlyCollectionBase_1 = (0, tslib_1.__importDefault)(require("@tsdotnet/collection-base/dist/ReadOnlyCollectionBase"));
-const areEqual_1 = (0, tslib_1.__importDefault)(require("@tsdotnet/compare/dist/areEqual"));
-const ArgumentException_1 = (0, tslib_1.__importDefault)(require("@tsdotnet/exceptions/dist/ArgumentException"));
-const ArgumentNullException_1 = (0, tslib_1.__importDefault)(require("@tsdotnet/exceptions/dist/ArgumentNullException"));
+const ReadOnlyCollectionBase_1 = tslib_1.__importDefault(require("@tsdotnet/collection-base/dist/ReadOnlyCollectionBase"));
+const areEqual_1 = tslib_1.__importDefault(require("@tsdotnet/compare/dist/areEqual"));
+const ArgumentException_1 = tslib_1.__importDefault(require("@tsdotnet/exceptions/dist/ArgumentException"));
+const ArgumentNullException_1 = tslib_1.__importDefault(require("@tsdotnet/exceptions/dist/ArgumentNullException"));
 const linked_node_list_1 = require("@tsdotnet/linked-node-list");
 /**
  * A collection for registering values by key.

@@ -4,7 +4,7 @@
  */
 import { ExtendedIterable } from '@tsdotnet/collection-base';
 import ReadOnlyCollectionBase from '@tsdotnet/collection-base/dist/ReadOnlyCollectionBase';
-export declare type KeyValuePair<TKey, TValue> = {
+export type KeyValuePair<TKey, TValue> = {
     readonly key: TKey;
     value: TValue;
 };
