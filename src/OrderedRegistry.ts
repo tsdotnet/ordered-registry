@@ -3,13 +3,10 @@
  * Licensing: MIT
  */
 
-import {ExtendedIterable} from '@tsdotnet/collection-base';
-import ReadOnlyCollectionBase from '@tsdotnet/collection-base/dist/ReadOnlyCollectionBase';
-import areEqual from '@tsdotnet/compare/dist/areEqual';
-import ArgumentException from '@tsdotnet/exceptions/dist/ArgumentException';
-import ArgumentNullException from '@tsdotnet/exceptions/dist/ArgumentNullException';
-import {LinkedNode, LinkedNodeList} from '@tsdotnet/linked-node-list';
-import {ProtectedLinkedNode} from '@tsdotnet/linked-node-list/dist/LinkedListNode';
+import {ExtendedIterable, ReadOnlyCollectionBase} from '@tsdotnet/collection-base';
+import {areEqual} from '@tsdotnet/compare';
+import {ArgumentException, ArgumentNullException} from '@tsdotnet/exceptions';
+import {type LinkedNode, LinkedNodeList, type ProtectedLinkedNode} from '@tsdotnet/linked-node-list';
 
 export type KeyValuePair<TKey, TValue> = {
 	readonly key: TKey;

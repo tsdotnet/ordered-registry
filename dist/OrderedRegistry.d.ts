@@ -2,8 +2,7 @@
  * @author electricessence / https://github.com/electricessence/
  * Licensing: MIT
  */
-import { ExtendedIterable } from '@tsdotnet/collection-base';
-import ReadOnlyCollectionBase from '@tsdotnet/collection-base/dist/ReadOnlyCollectionBase';
+import { ExtendedIterable, ReadOnlyCollectionBase } from '@tsdotnet/collection-base';
 export type KeyValuePair<TKey, TValue> = {
     readonly key: TKey;
     value: TValue;

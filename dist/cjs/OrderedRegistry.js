@@ -1,30 +1,31 @@
+"use strict";
 /*!
  * @author electricessence / https://github.com/electricessence/
  * Licensing: MIT
  */
-import { ExtendedIterable } from '@tsdotnet/collection-base';
-import ReadOnlyCollectionBase from '@tsdotnet/collection-base/dist/ReadOnlyCollectionBase';
-import areEqual from '@tsdotnet/compare/dist/areEqual';
-import ArgumentException from '@tsdotnet/exceptions/dist/ArgumentException';
-import ArgumentNullException from '@tsdotnet/exceptions/dist/ArgumentNullException';
-import { LinkedNodeList } from '@tsdotnet/linked-node-list';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.OrderedAutoRegistry = exports.OrderedRegistryBase = void 0;
+const collection_base_1 = require("@tsdotnet/collection-base");
+const compare_1 = require("@tsdotnet/compare");
+const exceptions_1 = require("@tsdotnet/exceptions");
+const linked_node_list_1 = require("@tsdotnet/linked-node-list");
 /**
  * A collection for registering values by key.
  * This base class is intended to facilitate specialized control.
  * Sub-classes control how items are added.
  */
-export class OrderedRegistryBase extends ReadOnlyCollectionBase {
+class OrderedRegistryBase extends collection_base_1.ReadOnlyCollectionBase {
     constructor() {
         super();
         this._entries = new Map();
-        this._listInternal = new LinkedNodeList();
+        this._listInternal = new linked_node_list_1.LinkedNodeList();
     }
     /**
      * Returns an in-order iterable of all keys.
      */
     get keys() {
         const _ = this;
-        return (_._keys || (_._keys = Object.freeze(ExtendedIterable.create({
+        return (_._keys || (_._keys = Object.freeze(collection_base_1.ExtendedIterable.create({
             *[Symbol.iterator]() {
                 for (const n of _._listInternal)
                     yield n.key;
@@ -36,7 +37,7 @@ export class OrderedRegistryBase extends ReadOnlyCollectionBase {
      */
     get values() {
         const _ = this;
-        return (_._values || (_._values = Object.freeze(ExtendedIterable.create({
+        return (_._values || (_._values = Object.freeze(collection_base_1.ExtendedIterable.create({
             *[Symbol.iterator]() {
                 for (const n of _._listInternal)
                     yield n.value;
@@ -49,7 +50,7 @@ export class OrderedRegistryBase extends ReadOnlyCollectionBase {
      */
     get reversed() {
         const _ = this;
-        return (_._reversed || (_._reversed = Object.freeze(ExtendedIterable.create({
+        return (_._reversed || (_._reversed = Object.freeze(collection_base_1.ExtendedIterable.create({
             *[Symbol.iterator]() {
                 for (const n of _._listInternal.reversed)
                     yield copy(n);
@@ -149,9 +150,9 @@ export class OrderedRegistryBase extends ReadOnlyCollectionBase {
      */
     _addInternal(key, value) {
         if (key == null)
-            throw new ArgumentNullException('key');
+            throw new exceptions_1.ArgumentNullException('key');
         if (this._entries.has(key))
-            throw new ArgumentException('key', 'An element with the same key already exists ');
+            throw new exceptions_1.ArgumentException('key', 'An element with the same key already exists ');
         const node = {
             key: key,
             value: value
@@ -170,7 +171,7 @@ export class OrderedRegistryBase extends ReadOnlyCollectionBase {
         const node = this._entries.get(key);
         if (node) {
             const old = node.value;
-            if (areEqual(old, value))
+            if ((0, compare_1.areEqual)(old, value))
                 return false;
             node.value = value;
         }
@@ -222,7 +223,7 @@ export class OrderedRegistryBase extends ReadOnlyCollectionBase {
      */
     getFirstKeyOf(value) {
         for (const n of this._listInternal) {
-            if (areEqual(value, n.value))
+            if ((0, compare_1.areEqual)(value, n.value))
                 return n.key;
         }
         return undefined;
@@ -232,7 +233,8 @@ export class OrderedRegistryBase extends ReadOnlyCollectionBase {
             yield copy(n);
     }
 }
-export default class OrderedRegistry extends OrderedRegistryBase {
+exports.OrderedRegistryBase = OrderedRegistryBase;
+class OrderedRegistry extends OrderedRegistryBase {
     constructor() {
         super();
     }
@@ -271,7 +273,8 @@ export default class OrderedRegistry extends OrderedRegistryBase {
         return true;
     }
 }
-export class OrderedAutoRegistry extends OrderedRegistryBase {
+exports.default = OrderedRegistry;
+class OrderedAutoRegistry extends OrderedRegistryBase {
     constructor() {
         super();
         this._lastId = 0 | 0;
@@ -309,6 +312,7 @@ export class OrderedAutoRegistry extends OrderedRegistryBase {
         return value;
     }
 }
+exports.OrderedAutoRegistry = OrderedAutoRegistry;
 function copy(kvp) {
     return { key: kvp.key, value: kvp.value };
 }
