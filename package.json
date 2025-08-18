@@ -63,7 +63,7 @@
     "@tsdotnet/common-interfaces": "^1.0.5",
     "@tsdotnet/compare": "^1.6.1",
     "@tsdotnet/exceptions": "^1.2.4",
-    "@tsdotnet/linked-node-list": "^1.4.1",
+    "@tsdotnet/linked-node-list": "^1.4.2",
     "tslib": "^2.8.1"
   },
   "pnpm": {
@@ -82,6 +82,9 @@
       "get-func-name@<2.0.1": ">=2.0.1",
       "@babel/traverse@<7.23.2": ">=7.23.2",
       "braces@<3.0.3": ">=3.0.3"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
