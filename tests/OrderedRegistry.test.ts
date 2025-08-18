@@ -3,7 +3,7 @@
  * Licensing: MIT
  */
 
-import {expect} from 'chai';
+import { describe, it, expect } from 'vitest';
 import OrderedRegistry from '../src/OrderedRegistry';
 
 describe('OrderedRegistry', () => {
@@ -37,6 +37,6 @@ describe('OrderedRegistry', () => {
 		addEntries(reg, 10);
 		reg.clear();
 		expect(reg.toArray().length).equal(0);
-		expect(reg.has(1)).to.be.false;
+		expect(reg.has(1)).toBe(false);
 	});
 });
