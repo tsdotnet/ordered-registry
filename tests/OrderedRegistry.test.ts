@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import OrderedRegistry, { OrderedAutoRegistry } from '../src/OrderedRegistry';
+import OrderedRegistry, { OrderedAutoRegistry } from '../src/OrderedRegistry.js';
 
 describe('OrderedRegistry', () => {
 	function addEntries (reg: OrderedRegistry<number, object>, count: number): number[]
