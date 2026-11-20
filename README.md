@@ -1,4 +1,4 @@
-<a href="https://tsdotnet.github.io/ordered-registry/"><img src="https://cdn.jsdelivr.net/gh/tsdotnet/ordered-registry@master/assets/banner.svg" alt="@tsdotnet/ordered-registry: A map that keeps order. Keyed entries, first in stays first."></a>
+<a name="banner"><img src="https://cdn.jsdelivr.net/gh/tsdotnet/ordered-registry@master/assets/banner.svg" alt="@tsdotnet/ordered-registry: A map that keeps order. Keyed entries, first in stays first."></a>
 
 [![npm version](https://img.shields.io/npm/v/@tsdotnet/ordered-registry.svg?style=flat-square)](https://www.npmjs.com/package/@tsdotnet/ordered-registry)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/tsdotnet/ordered-registry/blob/master/LICENSE)
